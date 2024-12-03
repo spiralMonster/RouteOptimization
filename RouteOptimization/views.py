@@ -8,7 +8,7 @@ model = ChatGoogleGenerativeAI(
         model="gemini-1.5-pro",
         api_key='AIzaSyCve8Wj4fQj52DNw9qvjzcOesPfko4D084'
     )
-
+@csrf_exempt
 def get_routes(request,*args,**kwargs):
     if request.method=='POST':
         try:
@@ -16,6 +16,7 @@ def get_routes(request,*args,**kwargs):
             source=data.get('source')
             destination=data.get('destination')
             results=PerformRoutePlanning(model,source,destination)
+            print(results)
             try:
                 return JsonResponse(results, status=200)
 

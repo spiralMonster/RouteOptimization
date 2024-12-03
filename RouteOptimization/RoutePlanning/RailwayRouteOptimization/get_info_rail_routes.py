@@ -44,7 +44,7 @@ def GetInfoRailRoutes(model,source,destination,curr_time):
     try:
         results = {}
         driver.get(url)
-        driver.implicitly_wait(20)
+        driver.implicitly_wait(30)
         driver.execute_script('window.scrollTo(0,document.body.scrollHeight);')
 
         results['Departure City']=source
@@ -53,12 +53,23 @@ def GetInfoRailRoutes(model,source,destination,curr_time):
         dep_time = driver.find_elements(By.CLASS_NAME, "yfbxi")
 
         ind=0
+        flag=0
         for i,d in enumerate(dep_time):
             train_time=d.text
-            train_time=datetime.strptime(train_time,"%H:%M").time()
-            if train_time>=curr_time.time():
-                ind=i
+            train_time=train_time.strip()
+            if train_time=='':
+                flag=1
                 break
+            else:
+                time = datetime.strptime(train_time, "%H:%M").time()
+                if time >= curr_time.time():
+                    ind = i
+                    break
+        if flag==1:
+            url=f"https://www.google.com/search?q=train+from+{source}+to+{destination}+on+{curr_time.date().strftime('%d-%m-%Y')}&oq=train+from+mumbai+to+chennai+on+2024-12-05&gs_lcrp=EgZjaHJvbWUyBggAEEUYOTIKCAEQABiABBiiBDIKCAIQABiABBiiBDIKCAMQABiABBiiBNIBCTIzNjQ0ajBqN6gCALACAA&sourceid=chrome&ie=UTF-8"
+            driver.get(url)
+            driver.implicitly_wait(30)
+            driver.execute_script('window.scrollTo(0,document.body.scrollHeight);')
 
         train_name = driver.find_elements(By.CLASS_NAME, "B6O8xe")
         text = train_name[ind].text

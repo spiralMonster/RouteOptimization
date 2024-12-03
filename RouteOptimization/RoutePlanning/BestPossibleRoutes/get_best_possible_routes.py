@@ -10,7 +10,7 @@ def GetBestPossibleRoute(model,source,destination):
 
     template = """
     You are given a source and a destination city.
-    Your job is to give me 3 best routes.
+    Your job is to give me 3 best route.
     The routes can contain roadways,railways,airways and seaways.
 
     Source:
@@ -53,6 +53,7 @@ def GetBestPossibleRoute(model,source,destination):
     chain = prompt | model | parser
 
     results = chain.invoke({'source': source, 'destination': destination, 'output_format': output_format})
+    print('Best routes are found...')
     return results
 
 if __name__=='__main__':

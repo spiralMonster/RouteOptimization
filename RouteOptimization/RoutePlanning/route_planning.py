@@ -113,8 +113,9 @@ def PerformRoutePlanning(model,source,destination):
                 results['Seaway routes'] = seaway_route
 
         final_result[f'Route {ind}'] = results
+        print(f"Route {ind} is completed..")
         ind += 1
-        time.sleep(5)
+        time.sleep(20)
 
     return final_result
 
@@ -122,11 +123,11 @@ def PerformRoutePlanning(model,source,destination):
 if __name__=='__main__':
     model = ChatGoogleGenerativeAI(
         model="gemini-1.5-pro",
-        api_key='AIzaSyCve8Wj4fQj52DNw9qvjzcOesPfko4D084'
+        api_key='AIzaSyBG_cGBRTmDLav1t_6Zb7q4Hp7pnlTLlMw'
     )
     source=input('Enter source city: ')
     destination=input('Enter destination city: ')
-    results=RoutePlanning(model,source,destination)
+    results=PerformRoutePlanning(model,source,destination)
     print(results)
 
 
