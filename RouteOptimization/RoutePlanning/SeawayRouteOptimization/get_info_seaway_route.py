@@ -32,6 +32,7 @@ def GetInfoSeaRoute(model,source,destination):
         'source':source,
         'destination':destination
     })
+    print("Checking Seaway Routes......")
     return results
 
 if __name__=='__main__':

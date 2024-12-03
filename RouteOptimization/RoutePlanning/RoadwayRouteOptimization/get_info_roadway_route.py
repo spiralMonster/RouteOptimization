@@ -31,7 +31,8 @@ def GetInfoRoadRoute(model,source,destination):
         'destination':destination
     })
     results['Departure City']=source
-    results['Arrival city']=destination
+    results['Arrival City']=destination
+    print("Checking Roadway Routes...")
     return results
 
 if __name__=="__main__":

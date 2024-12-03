@@ -14,6 +14,7 @@ def GetTrainFaresAndCarbonEmission(model,source,destination):
     Your job is to provide with:
      - Total expenditure during journey in INR
      - Expected carbon emission during journey in kgs
+     - Distance between the source and destination in kms
     **Note**:
      -Just provide value and nothing else.
      
@@ -74,7 +75,7 @@ def GetInfoRailRoutes(model,source,destination,curr_time):
         train_name = driver.find_elements(By.CLASS_NAME, "B6O8xe")
         text = train_name[ind].text
         text = text.replace("\n", "")
-        results['Train name'] = text
+        results['Train Name'] = text
 
         station_names = driver.find_elements(By.CLASS_NAME, "iQfFNc")
         text = station_names[ind].text
@@ -107,6 +108,7 @@ def GetInfoRailRoutes(model,source,destination,curr_time):
         other_info=GetTrainFaresAndCarbonEmission(model,source,destination)
         results['Total Expenditure']=other_info['expenditure']
         results['Carbon Emission']=other_info['carbon_emission']
+        results['distance']=other_info['distance']
 
     except Exception as e:
 
@@ -164,7 +166,7 @@ def GetInfoRailRoutes(model,source,destination,curr_time):
         other_info = GetTrainFaresAndCarbonEmission(model, source, destination)
         results['Total Expenditure'] = other_info['expenditure']
         results['Carbon Emission'] = other_info['carbon_emission']
-
+    print("Checking Railway Routes....")
     return results
 
 if __name__=='__main__':

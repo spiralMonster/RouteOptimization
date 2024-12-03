@@ -1,6 +1,7 @@
 from serpapi.google_search import GoogleSearch
 from langchain_google_genai import ChatGoogleGenerativeAI
 from .get_IATA_code import GetIATACode
+from .get_distance_between_cities import GetDistanceBtwCities
 from datetime import datetime,timedelta
 
 def GetInfoAirwayRoute(model,dep_city,arr_city,date):
@@ -31,6 +32,7 @@ def GetInfoAirwayRoute(model,dep_city,arr_city,date):
   carbon_emission = best_flights['carbon_emissions']['this_flight']/1000
   expend=best_flights['price']
 
+  output['distance']=GetDistanceBtwCities(model,dep_city,arr_city)['distance']
   output['Departure City']=dep_city
   output['Arrival City']=arr_city
   output['Departure Airport'] = dep_air_name
@@ -41,7 +43,8 @@ def GetInfoAirwayRoute(model,dep_city,arr_city,date):
   output['Airplane'] = airplane
   output['Airline'] = airline
   output['Expected Carbon Emission'] = str(carbon_emission)+" kgs"
-  output['Expected Expenditure']=str(expend)+" INR"
+  output['Expected Expenditure']=int(expend)
+  print("Checking Airway Routes.....")
   return output
 
 if __name__=='__main__':

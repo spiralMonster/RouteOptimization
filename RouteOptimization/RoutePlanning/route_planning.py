@@ -12,14 +12,16 @@ from .SeawayRouteOptimization.get_info_seaway_route import GetInfoSeaRoute
 def PerformRoutePlanning(model,source,destination):
     routes = GetBestPossibleRoute(model, source,destination)
     ind = 1
-    final_result = {}
+    final_result =[]
     for route in routes:
-        results = {}
+        results=[]
         current = datetime.now()
+        j=1
         for key, value in route.items():
             if key == 'roadways':
-                roadway_route = []
                 for src_dest in value:
+                    roadway_route = {}
+                    roadway_route['step'] = j
                     src_dest = src_dest.split("-")
                     src = src_dest[0]
                     dest = src_dest[1]
@@ -29,19 +31,36 @@ def PerformRoutePlanning(model,source,destination):
                     route_info['Departure Date'] = current.date().strftime("%d-%m-%Y")
                     route_info['Departure Time'] = current.time().strftime("%H:%M")
                     journey_time = route_info['time_required']
-                    route_info['time_required'] = str(route_info['time_required']) + " (in hours)"
-                    route_info['expected_cost'] = str(route_info['expected_cost']) + " (in INR)"
-                    route_info['carbon_emission'] = str(route_info['carbon_emission']) + " (in kgs)"
+                    route_info['time_required'] = str(route_info['time_required']) + " hours"
+                    route_info['cost'] = str(route_info['expected_cost']) + " INR"
+                    route_info['carbonEmission'] = str(route_info['carbon_emission']) + " (in kgs)"
                     time_to_add = timedelta(hours=journey_time, minutes=0)
                     current = current + time_to_add
                     route_info['Arrival Date'] = current.date().strftime("%d-%m-%Y")
                     route_info['Arrival Time'] = current.time().strftime("%H:%M")
-                    roadway_route.append(route_info)
-                results['Roadway routes'] = roadway_route
+
+                    roadway_route['from']=route_info['Departure City']
+                    roadway_route['to']=route_info['Arrival City']
+                    roadway_route['by']='road'
+                    roadway_route['distance']=route_info['distance_covered']
+                    roadway_route['expectedTime']=route_info['time_required']
+                    roadway_route['cost']=route_info['cost']
+                    roadway_route['carbonEmission']=route_info['carbonEmission']
+                    roadway_route['departureDate']=route_info['Departure Date']
+                    roadway_route['departureTime']=route_info['Departure Time']
+                    roadway_route['arrivalDate']=route_info['Arrival Date']
+                    roadway_route['arrivalTime']=route_info['Arrival Time']
+                    roadway_route['remarks']={
+                        'highwayName':route_info['highway_name']
+                    }
+                    results.append(roadway_route)
+                    j+=1
+
 
             elif key == 'railways':
-                railway_route = []
                 for src_dest in value:
+                    railway_route={}
+                    railway_route['step']=j
                     src_dest = src_dest.split("-")
                     src = src_dest[0]
                     dest = src_dest[1]
@@ -57,21 +76,39 @@ def PerformRoutePlanning(model,source,destination):
                     route_info['Arrival Date'] = arr.date().strftime("%d-%m-%Y")
                     route_info['Arrival Time'] = arr.time().strftime("%H:%M")
 
-                    route_info['Total Expenditure'] = str(route_info['Total Expenditure']) + " (in INR)"
-                    route_info['Carbon Emission'] = str(route_info['Carbon Emission']) + ' (in kgs)'
+                    route_info['cost'] = str(route_info['Total Expenditure']) + " INR"
+                    route_info['carbonEmission'] = str(route_info['Carbon Emission']) + ' (in kgs)'
 
                     current = arr
-                    railway_route.append(route_info)
-                results['Railway routes'] = railway_route
+                    railway_route['from']=route_info['Departure City']
+                    railway_route['to']=route_info['Arrival City']
+                    railway_route['by']='rail'
+                    railway_route['distance']=route_info['distance']
+                    railway_route['expectedTime']=route_info['Train Duration']
+                    railway_route['cost']=route_info['cost']
+                    railway_route['carbonEmission']=route_info['carbonEmission']
+                    railway_route['departureDate']=route_info['Departure Date']
+                    railway_route['departureTime']=route_info['Departure Time']
+                    railway_route['arrivalDate']=route_info['Arrival Date']
+                    railway_route['arrivalTime']=route_info['Arrival Time']
+                    railway_route['remarks']={
+                        'trainName':route_info['Train Name'],
+                        'departureStation':route_info['Departure Station'],
+                        'arrivalStation':route_info['Arrival Station']
+                    }
+                    results.append(railway_route)
+                    j+=1
+
 
             elif key == 'airways':
-                airway_route = []
                 for src_dest in value:
+                    airway_route={}
                     time_to_add = timedelta(hours=24, minutes=0)
                     current = current + time_to_add
                     src_dest = src_dest.split("-")
                     src = src_dest[0]
                     dest = src_dest[1]
+                    airway_route['step']:j
                     route_info = GetInfoAirwayRoute(model, src, dest, current.date())
 
                     dep = route_info['Departure Time']
@@ -85,13 +122,32 @@ def PerformRoutePlanning(model,source,destination):
                     route_info['Arrival Time'] = arr.time().strftime("%H:%M")
 
                     current = arr
+                    airway_route['from']=route_info['Departure City']
+                    airway_route['to']=route_info['Arrival City']
+                    airway_route['by']='airways'
+                    airway_route['distance']=str(route_info['distance'])+' kms'
+                    airway_route['expectedTime']=route_info['Flight Duration']
+                    airway_route['cost']=str(route_info['Expected Expenditure'])+" INR"
+                    airway_route['departureDate']=route_info['Departure Date']
+                    airway_route['departureTime']=route_info['Departure Time']
+                    airway_route['arrivalDate']= route_info['Arrival Date']
+                    airway_route['arrivalTime']=route_info['Arrival Time']
+                    airway_route['remarks']={
+                        'departureAirport':route_info['Departure Airport'],
+                        'arrivalAirport':route_info['Arrival Airport'],
+                        'airplane':route_info['Airplane'],
+                        'airline':route_info['Airline']
+                    }
 
-                    airway_route.append(route_info)
-                results['Airway routes'] = airway_route
+                    results.append(airway_route)
+                    j+=1
+
 
             else:
-                seaway_route = []
+
                 for src_dest in value:
+                    roadway_route={}
+                    roadway_route['step']=j
                     src_dest = src_dest.split("-")
                     src = src_dest[0]
                     dest = src_dest[1]
@@ -103,21 +159,43 @@ def PerformRoutePlanning(model,source,destination):
                     journey_time = route_info['time_required']
                     route_info['time_required'] = str(route_info['time_required']) + " (in hours)"
                     route_info['expected_cost'] = str(route_info['expected_cost']) + " (in INR)"
-                    route_info['carbon_emission'] = str(route_info['carbon_emission']) + " (in kgs)"
+                    route_info['carbonEmission'] = str(route_info['carbon_emission']) + " (in kgs)"
                     time_to_add = timedelta(hours=journey_time, minutes=0)
                     current = current + time_to_add
                     route_info['Arrival Date'] = current.date().strftime("%d-%m-%Y")
                     route_info['Arrival Time'] = current.time().strftime("%H:%M")
-                    seaway_route.append(route_info)
 
-                results['Seaway routes'] = seaway_route
+                    roadway_route['from'] = route_info['source_port_name']
+                    roadway_route['to'] = route_info['destination_port_name']
+                    roadway_route['by'] = 'road'
+                    roadway_route['distance'] = route_info['distance_covered']
+                    roadway_route['expectedTime'] = route_info['time_required']
+                    roadway_route['cost'] = route_info['cost']
+                    roadway_route['carbonEmission'] = route_info['carbonEmission']
+                    roadway_route['departureDate'] = route_info['Departure Date']
+                    roadway_route['departureTime'] = route_info['Departure Time']
+                    roadway_route['arrivalDate'] = route_info['Arrival Date']
+                    roadway_route['arrivalTime'] = route_info['Arrival Time']
+                    roadway_route['remarks']={
+                        'ferryName':route_info['ferry_name']
+                    }
 
-        final_result[f'Route {ind}'] = results
+                    results.append(roadway_route)
+
+
+
+        inst={
+            'routeId':f"route{ind}",
+            'steps':results
+        }
+        final_result.append(inst)
         print(f"Route {ind} is completed..")
         ind += 1
         time.sleep(20)
-
-    return final_result
+    output={
+        'deliveryRoutes':final_result
+    }
+    return output
 
 
 if __name__=='__main__':
